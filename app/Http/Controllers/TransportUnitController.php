@@ -24,7 +24,7 @@ class TransportUnitController extends Controller {
             $query->where('name', 'like', '%' . $validated['search'] . '%');
         }
     
-        $paginator = $query->paginate($validated['per_page'] ?? 15);
+        $paginator = $query->paginate($validated['per_page'] ?? 5);
         $totalTrucks = TransportUnit::where('type', 'truck')->count();
         $totalTrailers = TransportUnit::where('type', 'trailer')->count();
     

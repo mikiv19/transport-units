@@ -1,50 +1,13 @@
 <template>
+ 
   <div class="container">
-    <div class="tabs">
-      <button 
-        @click="setActiveTab('truck')" 
-        :class="{ active: activeTab === 'truck' }">
-        Trucks ({{ truckCount }})
-      </button>
-      <button 
-        @click="setActiveTab('trailer')" 
-        :class="{ active: activeTab === 'trailer' }">
-        Trailers ({{ trailerCount }})
-      </button>
-    </div>
-
-    <div class="search-box">
-      <input
-        v-model="searchQuery"
-        placeholder="Search units..."
-        @input="debouncedSearch"
-        class="search-input"/>
-    </div>
-
-    <div v-if="loading" class="loading">Loading...</div>
-    
-    <div v-else>
-      <div class="unit-list">
-        <div v-for="unit in transportUnits" :key="unit.id" class="unit-item">
-          <span class="unit-name">{{ unit.name }}</span>
-          <span class="unit-type">{{ unit.type_string }}</span>
-        </div>
-      </div>
-
-      <button 
-        v-if="hasMore" 
-        @click="loadMore"
-        class="load-more">
-        Load More
-      </button>
-    </div>
-
+    <img class="logo" fetchpriority="high" src="https://mypallet.io/wp-content/uploads/2022/03/logo-default.svg">
     <form @submit.prevent="createUnit" class="create-form">
       <h3>Create New Unit</h3>
       <div class="form-group">
         <input
           v-model="newUnit.name"
-          placeholder="Unit name"
+          placeholder="New unit name..."
           required
           class="form-input">
       </div>
@@ -56,6 +19,55 @@
       </div>
       <button type="submit" class="submit-btn">Create Unit</button>
     </form>
+    <div class="tabs">
+      <button 
+        @click="setActiveTab('truck')" 
+        :class="['tab-btn', { active: activeTab === 'truck', inactive: activeTab !== 'truck' }]">
+        Trucks ({{ truckCount }})
+      </button>
+      <button 
+        @click="setActiveTab('trailer')" 
+        :class="['tab-btn', { active: activeTab === 'trailer', inactive: activeTab !== 'trailer' }]">
+        Trailers ({{ trailerCount }})
+      </button>
+
+    </div>
+
+    <div class="search-box">
+      
+      <input
+        v-model="searchQuery"
+        placeholder="Search units..."
+        @input="debouncedSearch"
+        class="search-input"/>
+    </div>
+
+    <div v-if="loading" class="loading">Loading...</div>
+    
+    <div v-else class="unit-list">
+      <div class="unit-list-sub">
+        <div v-for="unit in transportUnits" :key="unit.id" class="unit-item">
+          <span class="unit-name">{{ unit.name }}</span>
+          <span class="unit-type">{{ unit.type_string }}</span>
+        </div>
+      </div>
+
+      <div class="pagination-controls">
+        <button 
+          @click="previousPage" 
+          :disabled="currentPage === 1"
+          class="page-btn">
+          Previous
+        </button>
+        <span class="page-info">Page {{ currentPage }} of {{ lastPage }}</span>
+        <button 
+          @click="nextPage" 
+          :disabled="currentPage === lastPage"
+          class="page-btn">
+          Next
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -98,7 +110,7 @@ export default {
     async fetchData(reset = false) {
       this.loading = true;
       try {
-        const page = reset ? 1 : this.currentPage + 1;
+        const page = reset ? 1 : this.currentPage;
         const response = await axios.get('/api/transport-units', {
           params: {
             type: this.activeTab,
@@ -107,12 +119,10 @@ export default {
           }
         });
 
+        this.transportUnits = response.data.data;
+
         if (reset) {
-          this.transportUnits = response.data.data;
           this.currentPage = 1;
-        } else {
-          this.transportUnits = [...this.transportUnits, ...response.data.data];
-          this.currentPage = page;
         }
 
         this.truckCount = response.data.meta.total_trucks;
@@ -126,6 +136,7 @@ export default {
         this.loading = false;
       }
     },
+  
 
     async createUnit() {
       try {
@@ -135,6 +146,18 @@ export default {
       } catch (error) {
         console.error('Create error:', error);
         alert('Error creating unit. Please check the console for details.');
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.lastPage) {
+        this.currentPage++;
+        this.fetchData(false);
+      }
+    },
+    previousPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+        this.fetchData(false);
       }
     },
   },
