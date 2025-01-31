@@ -12,8 +12,7 @@
   --color-muted: #aabab7;
   --color-dark-muted: #6a8780;
   --color-dark-text: #2c323a;
---red:red;
-
+}
 
 .container {
   max-height: 100%;
@@ -30,17 +29,16 @@
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
-  color:#037ea3
   
 }
 
 .tabs button {
   background-color: #cccccc;
-  color: #2a534a;
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
   background: var(--color-off-white);
+  transition: all 0.5s ease;
 }
 
 .tabs button.active {
@@ -49,7 +47,7 @@
   border-color: var(--color-primary);
 }
 .tabs button.inactive {
-  background-color: #6a8780;
+  background: #cccccc;
   color: var(--color-dark-text);
   border-color: var(--color-primary);
 }
@@ -174,11 +172,11 @@ select {
 
 .page-btn:disabled {
   background-color: #cccccc;
+  color: var(--color-dark-text);
   cursor: not-allowed;
 }
 
 .page-info {
   font-size: 0.9rem;
   color: #6a8780;
-}
 }
