@@ -14,8 +14,8 @@ class TransportUnitController extends Controller {
             'per_page' => 'nullable|integer|min:1|max:100',
         ]);
     
+        
         $query = TransportUnit::query();
-    
         if ($request->has('type')) {
             $query->where('type', $validated['type']);
         }
@@ -24,13 +24,10 @@ class TransportUnitController extends Controller {
             $query->where('name', 'like', '%' . $validated['search'] . '%');
         }
     
-        $paginator = $query->paginate($validated['per_page'] ?? 15);
-    
-        // Get total counts for each type
+        $paginator = $query->paginate($validated['per_page'] ?? 5);
         $totalTrucks = TransportUnit::where('type', 'truck')->count();
         $totalTrailers = TransportUnit::where('type', 'trailer')->count();
     
-        // Append the totals to the paginator's meta
         $paginator->appends(['meta' => [
             'total_trucks' => $totalTrucks,
             'total_trailers' => $totalTrailers,
@@ -46,6 +43,7 @@ class TransportUnitController extends Controller {
             ],
         ]);
     }
+
     public function store(Request $request) {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
