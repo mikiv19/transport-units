@@ -1,10 +1,12 @@
 <?php
 
 namespace App\Models;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Enums\TransportUnitType; 
 
 class TransportUnit extends Model {
+    use HasFactory;
     protected $fillable = ['name', 'type'];
     
     protected $casts = [
