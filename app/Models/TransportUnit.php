@@ -22,5 +22,13 @@ class TransportUnit extends Model {
         return $this->type->value;
     }
     
+
+    /* 
+    why did i even add this. When the above method 
+    is already doing the same thing?
+    both return the type the above one returns it 
+    as type, and the bottom as type sting. 
+    Aka Redundant code.
+    */
     protected $appends = ['type_string'];
 }

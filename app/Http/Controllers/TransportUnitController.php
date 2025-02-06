@@ -23,11 +23,23 @@ class TransportUnitController extends Controller {
         if ($request->has('search')) {
             $query->where('name', 'like', '%' . $validated['search'] . '%');
         }
-    
+
+        
+        /*
+        Code optimization could be done here; one single query 
+        to get total trucks and trailers. E.g.
+        Can also be cached for better performance,
+        by reducing the number of queries.
+        */
         $paginator = $query->paginate($validated['per_page'] ?? 5);
         $totalTrucks = TransportUnit::where('type', 'truck')->count();
         $totalTrailers = TransportUnit::where('type', 'trailer')->count();
-    
+
+
+        /*
+        Redundant code
+        As its doing in in the return response below.
+        */
         $paginator->appends(['meta' => [
             'total_trucks' => $totalTrucks,
             'total_trailers' => $totalTrailers,
@@ -44,6 +56,11 @@ class TransportUnitController extends Controller {
         ]);
     }
 
+    /* 
+    If cache is used, Then this method needs a cache:forget.
+    to insure that the data is always up to date.
+    edge cases could be other update sources.
+    */
     public function store(Request $request) {
         $validated = $request->validate([
             'name' => 'required|string|max:255',

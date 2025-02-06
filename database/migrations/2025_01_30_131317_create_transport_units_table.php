@@ -10,7 +10,15 @@ public function up(){
     Schema::create('transport_units', function (Blueprint $table) {
         $table->id();
         $table->string('name');
-        $table->string('type'); // Must match enum values
+
+        /* 
+        Use enum instead of string here.
+        String type, or simply keep it string,
+        as the model ensures enum input.
+        This would give some flexibility to the database.
+        at cost of performance.
+        */
+         $table->string('type');
         $table->timestamps();
     });
     }
